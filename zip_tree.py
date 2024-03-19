@@ -3,6 +3,7 @@
 
 from typing import TypeVar
 from collections import deque
+import random
 
 KeyType = TypeVar('KeyType')
 ValType = TypeVar('ValType')
@@ -15,8 +16,12 @@ class ZipTree:
 
 	@staticmethod
 	def get_random_rank() -> int:
+		k = random.randint(0, float('inf'))
+        while random.random() >= 1 / (2 ** (k + 1)):
+            k = random.randint(0, float('inf'))
+        return k
 		# Have no idea how to do this part
-		pass
+
 
 	def insert(self, key: KeyType, val: ValType, rank: int = -1):
 		# If this node has no rank, give it a random rank
