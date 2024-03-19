@@ -16,10 +16,13 @@ class ZipTree:
 
 	@staticmethod
 	def get_random_rank() -> int:
-		k = random.randint(0, float('inf'))
-        while random.random() >= 1 / (2 ** (k + 1)):
-            k = random.randint(0, float('inf'))
-        return k
+		return 1
+		'''
+		k = 0
+		while random.random() < 1 / (2 ** (k + 1)):
+			k += 1
+		return k
+		'''
 		# Have no idea how to do this part
 
 
@@ -34,9 +37,10 @@ class ZipTree:
 
 	# a helper function to recursively insert
 	def insert_recursive(self, node, key, val, rank):
+		# if root is empty
 		if not node:
 			return {'key': key, 'val': val, 'rank': rank, 'left': None, 'right': None}
-		
+		#if our rank is less tahn curr , we continue left , else continue right
 		if rank < node['rank']:
 			if key < node['key']:
 				node['left'] = self.insert_recursive(node['left'], key, val, rank)
