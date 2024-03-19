@@ -3,6 +3,7 @@
 
 from typing import TypeVar
 import random
+
 KeyType = TypeVar('KeyType')
 ValType = TypeVar('ValType')
 
@@ -23,9 +24,9 @@ class ZipTree:
 	def get_random_rank() -> int:
 		# After a lot of research on how to generate a random integer with a geometric distribution
 		# Geometric distribution: p(k) = (1 - p)^(k - 1) * p
-		# In this case, p = 1. Use the random module from python.
+		# In this case, p = 0.5 -> E(X) = 1. Use the random module from python.
 		# Sad, my research ended up not doing much, just gonna keep it here for now cuz idk how to do this.
-		return random.geometric(p = 1)
+		return random.geometric(p = 0.5)
 		pass
 
 	def insert(self, key: KeyType, val: ValType, rank: int = -1):
@@ -48,14 +49,26 @@ class ZipTree:
 		current = self.root # Essentially our 'y'
 		while current:
 			# If meets conditions, then break as current is where it should be as well as parent (unless it's the root)
-			if rank < current.rank or (rank == current.rank and key < current.key):
+			if current.rank < rank or (current.rank == rank and current.key > key):
 				break
 
+			# If y has not been found, continue traversing the tree
 			parent = current
 			if key < current.key:
 				current = current.left
 			else:
 				current = current.right
+			
+		# If y is never found, then set as leaf node
+		if current is None:
+			if key < parent.key:
+				parent.left = new_node
+			else:
+				parent.right = new_node
+			self.size += 1
+			# self.print_tree(self.root)
+			# print("\n")
+			return
 
 		# Create paths P and Q by unzipping from node y
 		P, Q = self.unzip(current, new_node)
@@ -65,7 +78,7 @@ class ZipTree:
 			new_node.left = P
 			new_node.right = Q
 			self.root = new_node
-		elif parent is None or rank < parent.rank or (rank == parent.rank and key < parent.key):
+		elif rank < parent.rank or (rank == parent.rank and key < parent.key):
 			new_node.left = P
 			new_node.right = Q
 			if parent.left == current:
@@ -75,17 +88,23 @@ class ZipTree:
 		
 		self.size += 1
 
+		# self.print_tree(self.root)
+		# print("\n")
+
 	def unzip(self, y, x):
-		P = None
-		Q = None
-		while y:
-			if (y.rank < x.rank) or (y.rank == x.rank and y.key > x.key):
-				P, y.right = y.right, P
-				y = y.left
+		def unzip_lookup(k, node):
+			if node is None:
+				return (None, None)
+			if node.key < k:
+				P, Q = unzip_lookup(k, node.right)
+				node.right = P
+				return (node, Q)
 			else:
-				Q, y.left = y.left, Q
-				y = y.right
-		return P, Q
+				P, Q = unzip_lookup(k, node.left)
+				node.left = Q
+				return (P, node)
+				
+		return unzip_lookup(x.key, y)
 
 	def remove(self, key: KeyType):
 		self.root = self.remove_recursive(self.root, key)
@@ -139,14 +158,20 @@ class ZipTree:
 		return self.size
 
 	def get_height(self) -> int:		
-		return self.get_height_recursive(self.root)
+		return self.get_height_recursive(self.root) - 1
 	
 	def get_height_recursive(self, node):
+
+		# print("counting node: ", node)
+
 		if node is None:
 			return 0
 		
 		left_height = self.get_height_recursive(node.left)
 		right_height = self.get_height_recursive(node.right)
+
+		# print("left_height: ", left_height)
+		# print("right_height: ", right_height)
 
 		return 1 + max(left_height, right_height)
 
@@ -154,6 +179,9 @@ class ZipTree:
 		return self.get_depth_recursive(self.root, key)
 	
 	def get_depth_recursive(self, node, key, depth = 0):
+
+		# print("node: (", node.key, node.val, node.rank, "). key: ", key)
+
 		if node is None:
 			return -1
 		
@@ -163,6 +191,16 @@ class ZipTree:
 			return self.get_depth_recursive(node.left, key, depth + 1)
 		else:
 			return self.get_depth_recursive(node.right, key, depth + 1)
+		
+	'''
+	def print_tree(self, root, level = 0):
+		if root is None:
+			print("  " * level + "None")
+			return
+		print("  " * level + f"({root.key}, {root.val}, {root.rank})")
+		self.print_tree(root.left, level + 1)
+		self.print_tree(root.right, level + 1)
+	'''
 
 # feel free to define new classes/methods in addition to the above
 # fill in the definitions of each required member function (above),
