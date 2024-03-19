@@ -3,6 +3,9 @@
 
 from typing import TypeVar
 import random
+import sys
+
+sys.setrecursionlimit(10000)
 
 KeyType = TypeVar('KeyType')
 ValType = TypeVar('ValType')
@@ -26,7 +29,7 @@ class ZipTree:
 		# Geometric distribution: p(k) = (1 - p)^(k - 1) * p
 		# In this case, p = 0.5 -> E(X) = 1. Use the random module from python.
 		# Sad, my research ended up not doing much, just gonna keep it here for now cuz idk how to do this.
-		return random.geometric(p = 0.5)
+		return random.randint(0, 2)
 		pass
 
 	def insert(self, key: KeyType, val: ValType, rank: int = -1):
@@ -144,15 +147,17 @@ class ZipTree:
 		return self.find_recursive(self.root, key)
 	
 	def find_recursive(self, node, key):
-
+		
+		# The node is not in the tree
 		if node is None:
 			return None
+		
 		if key == node.key:
-			return node.val
+			return node.val # Found the node, return its value
 		elif key < node.key:
-			return self.find_recursive(node.left, key)
+			return self.find_recursive(node.left, key) # Traverse the left branch
 		else:
-			return self.find_recursive(node.right, key)
+			return self.find_recursive(node.right, key) # Traverse the right branch
 
 	def get_size(self) -> int:
 		return self.size
