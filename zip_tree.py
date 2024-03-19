@@ -2,6 +2,7 @@
 # each file that uses a Zip Tree should import it from this file.
 
 from typing import TypeVar
+from collections import deque
 
 KeyType = TypeVar('KeyType')
 ValType = TypeVar('ValType')
@@ -9,6 +10,7 @@ ValType = TypeVar('ValType')
 class ZipTree:
 	def __init__(self):
 		self.root = None
+		self.size = 0
 		pass
 
 	@staticmethod
@@ -22,6 +24,7 @@ class ZipTree:
 			rank = self.get_random_rank()
 
 		self.root = self.insert_recursive(self.root, key, val, rank)
+		self.size += 1
 		pass
 
 	# a helper function to recursively insert
@@ -49,6 +52,7 @@ class ZipTree:
 	def remove(self, key: KeyType):
 
 		self.root = self.remove_recursive(self.root, key)
+		self.size -= 1
 
 	def remove_recursive(self, node, key):
 
@@ -95,20 +99,13 @@ class ZipTree:
 
 	def get_size(self) -> int:
 
-		return self.get_size_recursive(self.root)
-	
-	def get_size_recursive(self, node):
-		if not node:
-			return 0
-		
-		left_size = self.get_size_recursive(node.get('left', None))
-		right_size = self.get_size_recursive(node.get('right', None))
-
-		return 1 + left_size + right_size
-		pass
+		return self.size
 
 	def get_height(self) -> int:
 
+		if not self.root:
+			return 0
+		
 		return self.get_height_recursive(self.root)
 	
 	def get_height_recursive(self, node):
@@ -119,7 +116,6 @@ class ZipTree:
 		right_height = self.get_height_recursive(node.get('right', None))
 
 		return max(left_height, right_height) + 1
-		pass
 
 	def get_depth(self, key: KeyType):
 		return self.get_depth_recursive(self.root, key, 0)
@@ -131,7 +127,6 @@ class ZipTree:
 			return self.get_depth_recursive(node['left'], key, depth + 1)
 		else:
 			return self.get_depth_recursive(node['right'], key, depth + 1)
-		pass
 
 # feel free to define new classes/methods in addition to the above
 # fill in the definitions of each required member function (above),
