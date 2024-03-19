@@ -16,10 +16,7 @@ class ZipTree:
 
 	@staticmethod
 	def get_random_rank() -> int:
-		k = random.randint(0, float('inf'))
-        while random.random() >= 1 / (2 ** (k + 1)):
-            k = random.randint(0, float('inf'))
-        return k
+		pass
 		# Have no idea how to do this part
 
 
