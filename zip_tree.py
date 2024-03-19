@@ -27,6 +27,38 @@ class ZipTree:
 
 
 	def insert(self, key: KeyType, val: ValType, rank: int = -1):
+		# GO UP TO LAST HIGHER RANK NODE:
+		currRoot = self.root
+		prev = None
+		if rank == -1:
+			rank = self.get_random_rank()
+
+		
+		if currRoot == None:
+			return self
+
+			# iterate until we reach first child node
+		while ( currRoot != None and rank < currRoot.rank or(rank == currRoot.rank and key > currRoot.key)):
+			prev = currRoot
+			if key < currRoot.key:
+				currRoot = currRoot.left
+			else:
+				currRoot = currRoot.right
+		# from here is the unzipping, first we save the last node,
+				# maek our new node the child of the prev node , and then unzip
+		if prev.key > key:
+			temp = prev.left
+			prev.left = self
+		else:
+			temp = prev.right
+			prev.right = key
+
+			## now we unzip create p and q
+			
+		
+		
+		'''
+
 		# If this node has no rank, give it a random rank
 		if rank == -1:
 			rank = self.get_random_rank()
@@ -57,6 +89,8 @@ class ZipTree:
 				return new_node
 			
 		return node
+'''
+
 
 	def remove(self, key: KeyType):
 
