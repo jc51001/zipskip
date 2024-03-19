@@ -2,8 +2,7 @@
 # each file that uses a Zip Tree should import it from this file.
 
 from typing import TypeVar
-from collections import deque
-
+import random
 KeyType = TypeVar('KeyType')
 ValType = TypeVar('ValType')
 
@@ -15,7 +14,10 @@ class ZipTree:
 
 	@staticmethod
 	def get_random_rank() -> int:
-		# Have no idea how to do this part
+		# After a lot of research on how to generate a random integer with a geometric distribution
+		# Geometric distribution: p(k) = (1 - p)^(k - 1) * p
+		# In this case, p = 1. Use the random module from python.
+		return random.geometric(p = 1)
 		pass
 
 	def insert(self, key: KeyType, val: ValType, rank: int = -1):
@@ -23,36 +25,31 @@ class ZipTree:
 		if rank == -1:
 			rank = self.get_random_rank()
 
-		self.root = self.insert_recursive(self.root, key, val, rank)
+		# Generate a new node
+		new_node = {'key': key, 'val': val, 'rank': rank, 'left': None, 'right': None}
+
+		# Search for the node to be replaced (y)
+		self.root = self.insert_recursive(self.root, new_node)
+
+		# Update size to size + 1 as we have inserted a new node
 		self.size += 1
-		pass
+		
 
 	# a helper function to recursively insert
-	def insert_recursive(self, node, key, val, rank):
+	def insert_recursive(self, node, new_node):
 		if not node:
-			return {'key': key, 'val': val, 'rank': rank, 'left': None, 'right': None}
+			return new_node
 		
-		if rank < node['rank']:
-			if key < node['key']:
-				node['left'] = self.insert_recursive(node['left'], key, val, rank)
-			else:
-				node['right'] = self.insert_recursive(node['right'], key, val, rank)
+		if new_node['rank'] < node['rank'] or (new_node['rank'] == node['rank'] and new_node['key'] < node['key']):
+			# Unzip the remainder of the search path
+			new_node['left'], node['left'] = node, None
+			return new_node
 		else:
-			if key < node['key']:
-				# Rotate right
-				new_node = {'key': key, 'val': val, 'rank': rank, 'right': node, 'left': node['left']}
-				return new_node
-			else:
-				# Rotate left
-				new_node = {'key': key, 'val': val, 'rank': rank, 'left': node, 'right': node['right']}
-				return new_node
-			
-		return node
+			node['right'] = self.insert_recursive(node['right'], new_node)
+			return node
 
 	def remove(self, key: KeyType):
-
 		self.root = self.remove_recursive(self.root, key)
-		self.size -= 1
 
 	def remove_recursive(self, node, key):
 
@@ -60,9 +57,9 @@ class ZipTree:
 			return None
 		
 		if key < node['key']:
-			node['left'] = self.remove(node['left'], key)
+			node['left'] = self.remove_recursive(node['left'], key)
 		elif key > node['key']:
-			node['right'] = self.remove(node['right'], key)
+			node['right'] = self.remove_recursive(node['right'], key)
 		else:
 			if not node['left']:
 				return node['right']
@@ -72,7 +69,10 @@ class ZipTree:
 				# This is the case where the node has 2 children, so find the min val in the right subtree
 				min = self.find_min(node['right'])
 				node['key'], node['val'], node['rank'] = min['key'], min['val'], min['rank']
-				node['right'] = node(node['right'], min['key'])
+				node['right'] = self.remove_recursive(node['right'], min['key'])
+
+		if node:
+			self.size -= 1
 
 		return node
 		pass
@@ -84,7 +84,12 @@ class ZipTree:
 
 	def find(self, key: KeyType) -> ValType:
 
-		return self.find_recursive(self.root, key)['val']
+		result = self.find_recursive(self.root, key)
+
+		if result:
+			return result['val']
+		else:
+			return None
 	
 	def find_recursive(self, node, key):
 
@@ -95,7 +100,6 @@ class ZipTree:
 			return self.find_recursive(node['left'], key)
 		else:
 			return self.find_recursive(node['right'], key)
-		pass
 
 	def get_size(self) -> int:
 
@@ -112,8 +116,8 @@ class ZipTree:
 		if not node:
 			return 0
 		
-		left_height = self.get_height_recursive(node.get('left', None))
-		right_height = self.get_height_recursive(node.get('right', None))
+		left_height = self.get_height_recursive(node.get('left'))
+		right_height = self.get_height_recursive(node.get('right'))
 
 		return max(left_height, right_height) + 1
 
