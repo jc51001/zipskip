@@ -22,10 +22,6 @@ class ZipTree:
 
 	@staticmethod
 	def get_random_rank() -> int:
-		# After a lot of research on how to generate a random integer with a geometric distribution
-		# Geometric distribution: p(k) = (1 - p)^(k - 1) * p
-		# In this case, p = 0.5 -> E(X) = 1. Use the random module from python.
-		# Sad, my research ended up not doing much, just gonna keep it here for now cuz idk how to do this.
 		return random.randint(0, 2)
 		pass
 
@@ -41,8 +37,8 @@ class ZipTree:
 		if self.root is None:
 			self.root = x
 			self.size += 1
-			self.print_tree(self.root)
-			print("\n")
+			# self.print_tree(self.root)
+			# print("\n")
 			return
 		
 		# Search for the node with key 'K' in the tree
@@ -70,8 +66,8 @@ class ZipTree:
 			else:
 				parent.right = x
 			self.size += 1
-			self.print_tree(self.root)
-			print("\n")
+			# self.print_tree(self.root)
+			# print("\n")
 			return
 
 		# Unzip the remainder of the search path for x (the portion starting with node y) to produce 2 paths, P and Q
@@ -92,8 +88,8 @@ class ZipTree:
 		
 		self.size += 1
 
-		self.print_tree(self.root)
-		print("\n")
+		# self.print_tree(self.root)
+		# print("\n")
 
 	def unzip(self, y, x):
 		def unzip_lookup(k, node):
@@ -115,8 +111,8 @@ class ZipTree:
 		self.root = self.remove_recursive(self.root, key)
 		self.size -= 1
 
-		self.print_tree(self.root)
-		print("\n")
+		# self.print_tree(self.root)
+		# print("\n")
 
 	def remove_recursive(self, node, key):
 
@@ -179,8 +175,8 @@ class ZipTree:
 		if node is None:
 			return 0
 		
-		left_height = self.get_height_recursive(node.left)
-		right_height = self.get_height_recursive(node.right)
+		left_height = self.get_height_recursive(node.left) # Recursively traverse through the left subtree and add 1 for each node it reaches
+		right_height = self.get_height_recursive(node.right) # Recursively traverse through the right subtree and add 1 for each node it reaches
 
 		# print("left_height: ", left_height)
 		# print("right_height: ", right_height)
@@ -194,17 +190,17 @@ class ZipTree:
 
 		# print("node: (", node.key, node.val, node.rank, "). key: ", key)
 
-		if node is None:
+		if node is None: # If the node is not in the tree, return -1 (Technically we assume that it will be found, but I got errors when I didn't have this)
 			return -1
 		
-		if key == node.key:
+		if key == node.key: # If the key is found, return the depth of the key
 			return depth
-		elif key < node.key:
-			return self.get_depth_recursive(node.left, key, depth + 1)
-		else:
-			return self.get_depth_recursive(node.right, key, depth + 1)
+		elif key < node.key: # If key < node.key, then we need to traverse to the left
+			return self.get_depth_recursive(node.left, key, depth + 1) # recursively go through the left subtree and increment the depth as we are going down one more level
+		else: # If key > node.key, then we need to traverse to the right
+			return self.get_depth_recursive(node.right, key, depth + 1) # recursively go through the right subtree and increment the depth as we are going down one more level
 		
-
+	'''
 	def print_tree(self, root, level = 0):
 		if root is None:
 			print("  " * level + "None")
@@ -212,7 +208,7 @@ class ZipTree:
 		print("  " * level + f"({root.key}, {root.val}, {root.rank})")
 		self.print_tree(root.left, level + 1)
 		self.print_tree(root.right, level + 1)
-
+	'''
 
 # feel free to define new classes/methods in addition to the above
 # fill in the definitions of each required member function (above),
