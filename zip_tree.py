@@ -23,7 +23,11 @@ class ZipTree:
 
 	@staticmethod
 	def get_random_rank() -> int:
-		return random.randint(0, 2)
+		k = 0
+		while random.random() < 1 / (2 ** (k + 1)):
+			k += 1
+		return k
+	
 		pass
 
 	def insert(self, key: KeyType, val: ValType, rank: int = -1):
