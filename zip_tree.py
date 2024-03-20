@@ -9,9 +9,14 @@ KeyType = TypeVar('KeyType')
 ValType = TypeVar('ValType')
 
 class ZipTree:
-	def __init__(self):
-		self.root = None
-		self.size = 0
+	def __init__(self, key: KeyType, val: ValType, rank: int):
+		self.key = key
+		self.val = val
+		self.rank = rank
+		self.left = None
+		self.right = None
+
+
 		pass
 
 	@staticmethod
@@ -28,31 +33,72 @@ class ZipTree:
 
 	def insert(self, key: KeyType, val: ValType, rank: int = -1):
 		# GO UP TO LAST HIGHER RANK NODE:
-		currRoot = self.root
-		prev = None
+
+		# If this node has no rank, give it a random rank
 		if rank == -1:
 			rank = self.get_random_rank()
 
-		
-		if currRoot == None:
-			return self
+		# Generate a new node with the random rank
+		new_node = self.Node(key, val, rank)
 
-			# iterate until we reach first child node
-		while ( currRoot != None and rank < currRoot.rank or(rank == currRoot.rank and key > currRoot.key)):
-			prev = currRoot
-			if key < currRoot.key:
-				currRoot = currRoot.left
+		# Make sure it is not an empty tree
+		if self.root is None:
+			self.root = new_node
+			new_node.right = None
+			new_node.left = None
+			self.size += 1
+			return
+
+		curr = self.root
+		while curr is not None and (new_node.rank < curr.rank or (new_node.ranlk == curr.rank and new_node.key > curr.key)):
+			prev = curr
+			if new_node.key < curr.key:
+				curr = curr.left
 			else:
-				currRoot = currRoot.right
-		# from here is the unzipping, first we save the last node,
-				# maek our new node the child of the prev node , and then unzip
-		if prev.key > key:
-			temp = prev.left
-			prev.left = self
-		else:
-			temp = prev.right
-			prev.right = key
+				curr = curr.right
 
+		if curr == self.root:
+			new_node = self.root
+
+		elif new_node.key < prev.key:
+			prev.left = new_node
+		else:
+			prev.right = new_node
+
+		if curr == None:
+			new_node.left = None
+			new_node.right = None
+			return 
+		if new_node.key < curr.key:
+			new_node.right = curr
+		else:
+			new_node.left = curr
+
+		prev = new_node
+
+		while curr is not None:
+			fix = prev
+			if curr.key < new_node.key:
+				prev = curr
+				curr = curr.right
+
+			else:
+				prev = currcurr = curr.left
+
+			if fix.key > new_node.key or fix == new_node and prev.key > new_node.key:
+					fix.left = curr
+			else:
+				fix.right = curr
+			return
+		
+
+
+
+
+
+
+
+			
 			## now we unzip create p and q
 			
 		
@@ -91,85 +137,134 @@ class ZipTree:
 		return node
 '''
 
-
-	def remove(self, key: KeyType):
-
-		self.root = self.remove_recursive(self.root, key)
-		self.size -= 1
-
-	def remove_recursive(self, node, key):
-
-		if not node:
-			return None
+def remove(self, key: KeyType):
 		
-		if key < node['key']:
-			node['left'] = self.remove(node['left'], key)
-		elif key > node['key']:
-			node['right'] = self.remove(node['right'], key)
-		else:
-			if not node['left']:
-				return node['right']
-			elif not node['right']:
-				return node['left']
+		parent = None
+		current = self.root
+		# search for node
+		while current:
+			if key < current.key:
+				parent, current = current, current.left
+			elif key > current.key:
+				parent, current = current, current.right
 			else:
-				# This is the case where the node has 2 children, so find the min val in the right subtree
-				min = self.find_min(node['right'])
-				node['key'], node['val'], node['rank'] = min['key'], min['val'], min['rank']
-				node['right'] = node(node['right'], min['key'])
+				print(f"removing{key, current.key, current.val, current.rank}")
+				break
+			# once found , romove via unzip	
+		if current:
+			self.root = self.remove_node(current, parent)
+			self.size -= 1
 
-		return node
-		pass
-
-	def find_min(self, node):
-		while node['left']:
-			node = node['left']
-		return node
-
-	def find(self, key: KeyType) -> ValType:
-
-		return self.find_recursive(self.root, key)['val']
-	
-	def find_recursive(self, node, key):
-
-		if not node or node['key'] == key:
-			return node
-		
-		if key < node['key']:
-			return self.find_recursive(node['left'], key)
+def remove_node(self, node, parent):
+		# if its a leaf node, make the parents pointer to it  = none
+		if not node.left and not node.right:
+			if parent:
+				if parent.left == node:
+					parent.left = None
+				else:
+					parent.right = None
+			else:
+				print(f'removal of {node.key, node.val, node.rank} success v 1')
+				return None
+			
+			# if it has both a left and right , we zip
+		elif node.left and node.right:
+			P, Q = self.zip(node.left, node.right)
+			if parent:
+				if parent.left == node:
+					parent.left = self.zip(P, Q)
+				else:
+					parent.right = self.zip(P, Q)
+			else:
+				print(f'removal of {node.key, node.val, node.rank} success v 2')
+				return self.zip(P, Q)
 		else:
-			return self.find_recursive(node['right'], key)
-		pass
+			if node.left:
+				child = node.left
+			else:
+				child = node.right
 
-	def get_size(self) -> int:
+			if parent:
+				if parent.left == node:
+					parent.left = child
+				else:
+					parent.right = child
+			else:
+				print(f'removal of {node.key, node.val, node.rank} success v 3')
+				return child
+		print(f'removal of {node.key, node.val, node.rank} success v 4')	
+		return self.root
 
+def zip(self, P, Q):
+		if P is None:
+			return Q
+		if Q is None:
+			return P
+		if Q.rank > P.rank:
+			Q.left = self.zip(P, Q.left)
+			return Q
+		else:
+			P.right = self.zip(P.right, Q)
+			return P
+
+def find(self, key: KeyType) -> ValType:
+
+		current = self.root
+
+		while current:
+			if key == current.key:
+				return current.val
+			elif key < current.key:
+				current = current.left
+			else:
+				current = current.right
+
+		return None
+
+def get_size(self) -> int:
 		return self.size
 
-	def get_height(self) -> int:
-
+def get_height(self) -> int:		
 		if not self.root:
-			return 0
+			return -1
 		
-		return self.get_height_recursive(self.root)
-	
-	def get_height_recursive(self, node):
-		if not node:
-			return 0
+		height = -1
+		stack = [(self.root, 0)]
+
+		while stack:
+			node, node_height = stack.pop()
+			height = max(height, node_height)
+			if node.left:
+				stack.append((node.left, node_height + 1))
+			if node.right:
+				stack.append((node.right, node_height + 1))
+
+		return height
+
+def get_depth(self, key: KeyType):
+		depth = 0
+		current = self.root
+
+		while current:
+			if key == current.key:
+				return depth
+			elif key < current.key:
+				current = current.left
+			else:
+				current = current.right
+			depth += 1
+
+		return -1
 		
-		left_height = self.get_height_recursive(node.get('left', None))
-		right_height = self.get_height_recursive(node.get('right', None))
-
-		return max(left_height, right_height) + 1
-
-	def get_depth(self, key: KeyType):
-		return self.get_depth_recursive(self.root, key, 0)
-	
-	def get_depth_recursive(self, node, key, depth):
-		if not node or node['key'] == key:
-			return depth
-		if key < node['key']:
-			return self.get_depth_recursive(node['left'], key, depth + 1)
-		else:
-			return self.get_depth_recursive(node['right'], key, depth + 1)
+'''
+	def print_tree(self, root, level = 0):
+		if root is None:
+			print("  " * level + "None")
+			return
+		print("  " * level + f"({root.key}, {root.val}, {root.rank})")
+		self.print_tree(root.left, level + 1)
+		self.print_tree(root.right, level + 1)
+'''
 
 # feel free to define new classes/methods in addition to the above
 # fill in the definitions of each required member function (above),
