@@ -13,21 +13,16 @@ class ZipTree:
 		self.key = key
 		self.val = val
 		self.rank = rank
-		self.left = None
-		self.right = None
-
 
 		pass
 
 	@staticmethod
 	def get_random_rank() -> int:
-		return 1
-		'''
 		k = 0
 		while random.random() < 1 / (2 ** (k + 1)):
 			k += 1
 		return k
-		'''
+		
 		# Have no idea how to do this part
 
 
@@ -89,21 +84,8 @@ class ZipTree:
 					fix.left = curr
 			else:
 				fix.right = curr
-			return
-		
-
-
-
-
-
-
-
-			
-			## now we unzip create p and q
-			
-		
-		
-		'''
+			return		
+	'''
 
 		# If this node has no rank, give it a random rank
 		if rank == -1:
@@ -259,7 +241,7 @@ def zip(self, P, Q):
 		else:
 			P.right = self.zip(P.right, Q)
 			return P
-'''
+	'''
 	def find(self, key: KeyType) -> ValType:
 
 		current = self.root
@@ -309,7 +291,7 @@ def zip(self, P, Q):
 
 		return -1
 		
-'''
+
 	def print_tree(self, root, level = 0):
 		if root is None:
 			print("  " * level + "None")
@@ -317,7 +299,7 @@ def zip(self, P, Q):
 		print("  " * level + f"({root.key}, {root.val}, {root.rank})")
 		self.print_tree(root.left, level + 1)
 		self.print_tree(root.right, level + 1)
-'''
+
 
 # feel free to define new classes/methods in addition to the above
 # fill in the definitions of each required member function (above),
