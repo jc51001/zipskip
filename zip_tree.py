@@ -3,9 +3,6 @@
 
 from typing import TypeVar
 import random
-import sys
-
-sys.setrecursionlimit(10000)
 
 KeyType = TypeVar('KeyType')
 ValType = TypeVar('ValType')
