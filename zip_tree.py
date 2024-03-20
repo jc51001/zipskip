@@ -135,8 +135,61 @@ class ZipTree:
 				return new_node
 			
 		return node
-'''
+	'''
 
+
+
+	def remove(self, key:KeyType):
+		curr = self.root
+		prev = None
+		while key != curr.key:
+			prev = curr
+			if key < curr.key:
+				curr = curr.left
+			else:
+				curr = curr.right
+		left = curr.left
+		right = curr.right
+
+		if left is None:
+			curr = right
+		elif right is None:
+			curr = left
+
+		elif left.rank >= right.rank:
+			curr = left
+		else:
+			curr = right
+
+		if self.root.key == key:
+			self.root = curr
+		elif key < prev.key:
+			prev.left = curr
+
+		else:
+			prev.right = curr
+	
+		while left is not None and right is not None:
+			if left.rank >= right.rank:
+				while left is not None and left.rank >= right.rank:
+					prev= left
+					left = left.right
+				prev.right = right
+			else:
+				while right is not None and left.rank <  right.rank:
+			
+					prev = right
+					right = right.left
+				prev.left = left
+		return self.root
+
+
+
+
+
+
+	pass
+	'''
 def remove(self, key: KeyType):
 		
 		parent = None
@@ -206,8 +259,8 @@ def zip(self, P, Q):
 		else:
 			P.right = self.zip(P.right, Q)
 			return P
-
-def find(self, key: KeyType) -> ValType:
+'''
+	def find(self, key: KeyType) -> ValType:
 
 		current = self.root
 
@@ -221,10 +274,10 @@ def find(self, key: KeyType) -> ValType:
 
 		return None
 
-def get_size(self) -> int:
+	def get_size(self) -> int:
 		return self.size
 
-def get_height(self) -> int:		
+	def get_height(self) -> int:		
 		if not self.root:
 			return -1
 		
@@ -241,7 +294,7 @@ def get_height(self) -> int:
 
 		return height
 
-def get_depth(self, key: KeyType):
+	def get_depth(self, key: KeyType):
 		depth = 0
 		current = self.root
 
