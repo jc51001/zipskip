@@ -28,7 +28,9 @@ def zip_tree_tests():
 	print('testing ZipTree')
 
 	data = [InsertType(4, 'a', 0), InsertType(5, 'b', 0), InsertType(2, 'c', 2), InsertType(1, 'd', 1)]
+	
 	tree = create_tree_with_data(data)
+	
 
 	print(f'find(4): {tree.find(4)}, Expected: a')
 	print(f'get_size(): {tree.get_size()}, Expected: 4')

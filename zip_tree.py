@@ -14,7 +14,6 @@ class ZipTree:
 		self.val = val
 		self.rank = rank
 
-		pass
 
 	@staticmethod
 	def get_random_rank() -> int:
