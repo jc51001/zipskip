@@ -38,8 +38,8 @@ class ZipTree:
 		if self.root is None:
 			self.root = new_node
 			self.size += 1
-			self.print_tree(self.root)
-			print("\n")
+			# self.print_tree(self.root)
+			# print("\n")
 			return
 		
 		# Search for the node with key 'K' in the tree
@@ -65,8 +65,8 @@ class ZipTree:
 			else:
 				parent.right = new_node
 			self.size += 1
-			self.print_tree(self.root)
-			print("\n")
+			# self.print_tree(self.root)
+			# print("\n")
 			return
 
 		# Create paths P and Q by unzipping from node y
@@ -87,8 +87,8 @@ class ZipTree:
 		
 		self.size += 1
 
-		self.print_tree(self.root)
-		print("\n")
+		# self.print_tree(self.root)
+		# print("\n")
 
 	def unzip(self, y, x):
 		def unzip_lookup(k, node):
@@ -215,7 +215,7 @@ class ZipTree:
 
 		return -1
 		
-	
+	'''
 	def print_tree(self, root, level = 0):
 		if root is None:
 			print("  " * level + "None")
@@ -223,7 +223,7 @@ class ZipTree:
 		print("  " * level + f"({root.key}, {root.val}, {root.rank})")
 		self.print_tree(root.left, level + 1)
 		self.print_tree(root.right, level + 1)
-	
+	'''
 
 # feel free to define new classes/methods in addition to the above
 # fill in the definitions of each required member function (above),
