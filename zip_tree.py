@@ -9,11 +9,21 @@ KeyType = TypeVar('KeyType')
 ValType = TypeVar('ValType')
 
 class ZipTree:
-	def __init__(self, key: KeyType, val: ValType, rank: int):
-		self.key = key
-		self.val = val
-		self.rank = rank
 
+	class Node:
+		def __init__(self, key: KeyType, val: ValType, rank: int):
+			self.key = key
+			self.val = val
+			self.rank = rank
+			self.right = None
+			self.left = None
+
+	
+
+	
+	def __init__(self):
+		self.root = None
+		self.size = 0
 
 	@staticmethod
 	def get_random_rank() -> int:
@@ -25,7 +35,7 @@ class ZipTree:
 		# Have no idea how to do this part
 
 
-	def insert(self, key: KeyType, val: ValType, rank: int = -1):
+	def insert(self, key: KeyType, vals: ValType, rank: int = -1):
 		# GO UP TO LAST HIGHER RANK NODE:
 
 		# If this node has no rank, give it a random rank
@@ -33,7 +43,7 @@ class ZipTree:
 			rank = self.get_random_rank()
 
 		# Generate a new node with the random rank
-		new_node = self.Node(key, val, rank)
+		new_node = self.Node(key, vals, rank)
 
 		# Make sure it is not an empty tree
 		if self.root is None:
@@ -44,7 +54,7 @@ class ZipTree:
 			return
 
 		curr = self.root
-		while curr is not None and (new_node.rank < curr.rank or (new_node.ranlk == curr.rank and new_node.key > curr.key)):
+		while curr is not None and (new_node.rank < curr.rank or (new_node.rank == curr.rank and new_node.key > curr.key)):
 			prev = curr
 			if new_node.key < curr.key:
 				curr = curr.left
@@ -62,6 +72,7 @@ class ZipTree:
 		if curr == None:
 			new_node.left = None
 			new_node.right = None
+			self.size += 1
 			return 
 		if new_node.key < curr.key:
 			new_node.right = curr
@@ -83,6 +94,7 @@ class ZipTree:
 					fix.left = curr
 			else:
 				fix.right = curr
+			self.size += 1
 			return		
 	'''
 
