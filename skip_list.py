@@ -50,20 +50,21 @@ class SkipList:
 		return 0
 		
 	def from_zip_tree(self, zip_tree: ZipTree) -> None:
-		current_level = 0
-		current_node = zip_tree.root
-		stack = []
-		while current_node or stack:
-			while current_node:
-				stack.append(current_node)
-				current_node = current_node.left
-			current_node = stack.pop()
-			if current_node.rank <= current_level:
-				if current_level not in self.levels:
-					self.levels[current_level] = ZipTree()
-				self.levels[current_level].insert(current_node.key, current_node.val)
-			current_level += 1
-			current_node = current_node.right
+		self.levels = {}
+		self.max_level = zip_tree.get_height()
+		self.insert_zip(zip_tree.root, 0)
+	
+	def insert_zip(self, node, level):
+		if node is not None:
+			self.insert_zip(node.left, level)
+			self.insert_node_at_level(node, node.rank)
+			self.insert_zip(node.right, level)
+
+	def insert_node_at_level(self, node, rank):
+		for i in range(rank + 1):
+			if i not in self.levels:
+				self.levels[i] = ZipTree()
+			self.levels[i].insert(node.key, node.val)
 			
 
 # feel free to define new classes/methods in addition to the above
